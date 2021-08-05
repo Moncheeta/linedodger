@@ -51,6 +51,8 @@ class Player():
             if self.player.colliderect(chunck):
                 print("Contact: Game Over")
                 game_over(self.score)
+                self.score = 0
+                self.x = 632
                 chuncks.remove(chunck)
                 break
             else:
