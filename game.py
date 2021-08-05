@@ -36,17 +36,13 @@ class Player():
         self.size = 8
         self.x = 632
         self.y = 712
-        self.vel = 3
         self.score = 0
+        self.vel = 3
         self.player = pygame.Rect(self.x, self.y, self.size, self.size)
         pygame.draw.circle(screen, WHITE, (self.x, self.y), self.size)
         print("[Player]: new player initialized")
 
     def update(self):
-        if self.x > 1280:
-            self.x -= 1
-        elif self.x < 0:
-            self.x += 1
         for chunck in chuncks:
             if self.player.colliderect(chunck):
                 print("Contact: Game Over")
@@ -59,9 +55,9 @@ class Player():
                 chuncks.remove(chunck)
         pressedkeys = pygame.key.get_pressed() #gets all pressed keys
         if self.x >= 1280 - self.size:
-            self.x -= 1
+            self.x = 1280 - self.size
         elif self.x <= 0 + self.size:
-            self.x += 1
+            self.x += 0
         else:
             if pressedkeys[pygame.K_LEFT]: #moves the player left if the left arrow is pressed
                 self.x -= self.vel
