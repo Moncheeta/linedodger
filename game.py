@@ -1,7 +1,7 @@
 import pygame, os, random, schedule
 
 WIDTH, HEIGHT = 1280, 720 #of the window
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Line Dodger")
 retry = False
 
@@ -10,13 +10,13 @@ WHITE = (255, 255, 255)
 
 lines = []
 chuncks = []
-min = 3.5
-max = 5
+MIN = 3.5
+MAX = 5
 linecount = 0
 
 FPS = 60 #frames per second
 
-background = pygame.image.load(os.path.join("assets", "stars.jpg")) #background
+BACKGROUND = pygame.image.load(os.path.join("assets", "stars.jpg")) #BACKGROUND
 
 def get_line_spaces():
     number_of_holes = random.randint(1, 3)
@@ -39,7 +39,7 @@ class Player():
         self.score = 0
         self.vel = 3
         self.player = pygame.Rect(self.x, self.y, self.size, self.size)
-        pygame.draw.circle(screen, WHITE, (self.x, self.y), self.size)
+        pygame.draw.circle(SCREEN, WHITE, (self.x, self.y), self.size)
         print("[Player]: new player initialized")
 
     def update(self):
@@ -63,7 +63,7 @@ class Player():
                 self.x -= self.vel
             elif pressedkeys[pygame.K_RIGHT]: #moves the player right if the left arrow is pressed
                 self.x += self.vel
-        pygame.draw.circle(screen, WHITE, (self.x, self.y), self.size)
+        pygame.draw.circle(SCREEN, WHITE, (self.x, self.y), self.size)
         self.player.topleft = self.x, self.y
 
 class Line():
@@ -77,7 +77,7 @@ class Line():
                 pass
             else:
                 x = number * 32
-                pygame.draw.rect(screen, WHITE, (x, self.y, 32, self.width))
+                pygame.draw.rect(SCREEN, WHITE, (x, self.y, 32, self.width))
         print(f"[Line]: new line initialized")
 
     def update(self):
@@ -92,21 +92,21 @@ class Line():
                     pass
                 else:
                     x = (number * 32) - 32
-                    new_chunck = pygame.draw.rect(screen, WHITE, (x, self.y, 32, 3))
+                    new_chunck = pygame.draw.rect(SCREEN, WHITE, (x, self.y, 32, 3))
                     new_chunck.topleft = x, self.y
                     chuncks.append(new_chunck)
 
 def updateWindow(player, lines, font):
-    screen.fill(WHITE)
-    screen.blit(background, (0, 0)) #puts the background
+    SCREEN.fill(WHITE)
+    SCREEN.blit(BACKGROUND, (0, 0)) #puts the BACKGROUND
     player.update()
     for line in lines:
         check = line.update()
         if check == "addScore":
             player.score += 1
     display_score = font.render(str(player.score), False, (WHITE))
-    screen.blit(display_score, (1248 - 16*len(str(player.score)), 20))
-    pygame.display.update() #updates/refreshes the screen
+    SCREEN.blit(display_score, (1248 - 16*len(str(player.score)), 20))
+    pygame.display.update() #updates/refreshes the SCREEN
 
 def playmusic():
     pygame.mixer.init() #starts the player
@@ -131,7 +131,7 @@ def run():
     font = pygame.font.SysFont("arial", 64)
     playmusic()
     player = Player()
-    schedule.every(int(min)).seconds.to(int(max)).do(new_line)
+    schedule.every(int(MIN)).seconds.to(int(MAX)).do(new_line)
     new_line()
     while run:
         clock.tick(FPS) #makes sure that the game stays at 60 fps
