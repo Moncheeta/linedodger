@@ -1,6 +1,11 @@
-import pygame, os, random, schedule
+import pygame
+import os
+import sys
+import random
+import schedule
+import itertools
 
-WIDTH, HEIGHT = 1280, 720 #of the window
+WIDTH, HEIGHT = 640, 320 #size of the window
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Line Dodger")
 retry = False
@@ -9,140 +14,139 @@ retry = False
 WHITE = (255, 255, 255)
 
 lines = []
-chuncks = []
-MIN = 3.5
-MAX = 5
-linecount = 0
-
+MIN = 3 #min amount of time to spawn a line
+MAX = 5 #max amount of time to spawn a line
 FPS = 60 #frames per second
 
-BACKGROUND = pygame.image.load(os.path.join("assets", "stars.jpg")) #BACKGROUND
+BACKGROUND = pygame.image.load(os.path.join("assets", "stars.jpg")).convert() #BACKGROUND
 
-def get_line_spaces():
-    number_of_holes = random.randint(1, 3)
-    holepositions = []
-    for item in range(number_of_holes):
-        chosen_one = random.randint(1, 40)
-        while True:
-            if chosen_one in holepositions:
-                chosen_one = random.randint(1, 40)
-            else:
-                holepositions.append(chosen_one)
-                break
-    return holepositions
+"""
+Todo:
+"""
 
 class Player():
     def __init__(self):
         self.size = 8
-        self.x = 632
-        self.y = 712
+        self.x = WIDTH/2
+        self.y = HEIGHT-20
         self.score = 0
-        self.vel = 3
+        self.vel = 2.5
         self.player = pygame.Rect(self.x, self.y, self.size, self.size)
         pygame.draw.circle(SCREEN, WHITE, (self.x, self.y), self.size)
-        print("[Player]: new player initialized")
 
     def update(self):
-        for chunck in chuncks:
-            if self.player.colliderect(chunck):
-                print("Contact: Game Over")
-                game_over(self.score)
-                self.score = 0
-                self.x = 632
-                chuncks.remove(chunck)
-                break
-            else:
-                chuncks.remove(chunck)
         pressedkeys = pygame.key.get_pressed() #gets all pressed keys
-        if self.x >= 1280 - self.size:
-            self.x = 1280 - self.size
-        elif self.x <= 0 + self.size:
-            self.x += 0
-        else:
-            if pressedkeys[pygame.K_LEFT]: #moves the player left if the left arrow is pressed
-                self.x -= self.vel
-            elif pressedkeys[pygame.K_RIGHT]: #moves the player right if the left arrow is pressed
-                self.x += self.vel
+        if pressedkeys[pygame.K_LEFT]: #moves the player left if the left arrow is pressed
+            self.x -= self.vel
+        elif pressedkeys[pygame.K_RIGHT]: #moves the player right if the left arrow is pressed
+            self.x += self.vel
+        if self.x < self.size:
+            self.x = self.size
+        elif self.x > WIDTH - self.size:
+            self.x = WIDTH - self.size
         pygame.draw.circle(SCREEN, WHITE, (self.x, self.y), self.size)
         self.player.topleft = self.x, self.y
+        for line in lines:
+            for chunck in line.chuncks: #checks for collisons
+                if self.player.colliderect(chunck):
+                    print("Contact: Game Over")
+                    self.score = 0
+                    self.x = WIDTH/2
+                    return -1
+                else:
+                    line.chuncks.remove(chunck)
+
+        return 0
 
 class Line():
     def __init__(self):
         self.y = 0
         self.speed = 2
         self.width = 3
-        self.holepositions = get_line_spaces()
-        for number in range(1, 40):
-            if number in self.holepositions:
-                pass
-            else:
-                x = number * 32
-                pygame.draw.rect(SCREEN, WHITE, (x, self.y, 32, self.width))
-        print(f"[Line]: new line initialized")
+        self.block_size = 32
+        self.num_of_chuncks = round(WIDTH/self.block_size)
+        number_of_holes = random.randint(1, 3)
+        self.holepositions = []
+        self.chuncks = []
+        for item in range(number_of_holes):
+            chosen_one = random.randint(0, self.num_of_chuncks - 1)
+            while True:
+                if not chosen_one in self.holepositions:
+                    self.holepositions.append(chosen_one)
+                    break
 
     def update(self):
         self.y += self.speed
-        if self.y >= 720:
-            print(f"[Line]: removed")
-            del lines[linecount]
-            return "addScore"
+        if self.y >= HEIGHT:
+            return -1
         else:
-            for number in range(1, 41):
+            for number in range(self.num_of_chuncks):
                 if number in self.holepositions:
                     pass
                 else:
-                    x = (number * 32) - 32
-                    new_chunck = pygame.draw.rect(SCREEN, WHITE, (x, self.y, 32, 3))
+                    x = (number * self.block_size)
+                    new_chunck = pygame.draw.rect(SCREEN, WHITE, (x, self.y, self.block_size, 3))
                     new_chunck.topleft = x, self.y
-                    chuncks.append(new_chunck)
+                    self.chuncks.append(new_chunck)
+            return 0
 
 def updateWindow(player, lines, font):
     SCREEN.fill(WHITE)
     SCREEN.blit(BACKGROUND, (0, 0)) #puts the BACKGROUND
-    player.update()
+    update_player = player.update()
+    if update_player != 0:
+        return update_player
     for line in lines:
-        check = line.update()
-        if check == "addScore":
+        if line.update() == -1:
             player.score += 1
+            lines.remove(line)
+            del line
     display_score = font.render(str(player.score), False, (WHITE))
-    SCREEN.blit(display_score, (1248 - 16*len(str(player.score)), 20))
+    SCREEN.blit(display_score, (WIDTH - 64*len(str(player.score)), 20))
     pygame.display.update() #updates/refreshes the SCREEN
 
 def playmusic():
     pygame.mixer.init() #starts the player
     pygame.mixer.music.load(os.path.join("assets", "space_music.wav")) #loads the music file
     pygame.mixer.music.play(-1) #to play forever
-    print("[Music]: Started")
 
 def new_line():
     new_line = Line()
     lines.append(new_line)
-    print(lines)
 
 def game_over(score): #:(
-    print(score)
+    for line in lines: 
+        lines.remove(line)
+        del line
+
+clock = pygame.time.Clock()
+pygame.init()
+pygame.font.init()
+font = pygame.font.SysFont("Arial", 64)
+playmusic()
+player = Player()
 
 def run():
-    run = True
-    clock = pygame.time.Clock()
-    pygame.init()
-    print("[Pygame]: initialized")
-    pygame.font.init()
-    font = pygame.font.SysFont("arial", 64)
-    playmusic()
-    player = Player()
-    schedule.every(int(MIN)).seconds.to(int(MAX)).do(new_line)
-    new_line()
-    while run:
+    create_new_lines = schedule.every(int(MIN)).seconds.to(int(MAX)).do(new_line)
+    player.x = WIDTH/2
+    while True:
         clock.tick(FPS) #makes sure that the game stays at 60 fps
         schedule.run_pending()
-        updateWindow(player, lines, font) #updates the window with the new player position
+        if_error = updateWindow(player, lines, font) #updates the window with the new player position
+        if if_error == -1:
+            return player.score
         for event in pygame.event.get(): #checks if you close the window and then stops the game
             if event.type == pygame.QUIT:
-                pygame.mixer.music.stop()
-                print("[Music]: Stopped")
-                pygame.quit() #closes the tab
-                print("Game Closed")
-                run = False
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_q:
+                    sys.exit()
+                elif event.key == pygame.K_r:
+                    return -1
 
-run()
+while True:
+    run_game = run()
+    if run_game != -1:
+        game_over(run_game)
+    schedule.clear()
+    player.score = 0
