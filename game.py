@@ -108,18 +108,7 @@ class linedodger():
             del line
 
     def run(self):
-        self.SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
-        pygame.display.set_caption("Line Dodger")
-
-        self.lines = []
-        self.FPS = 60 #frames per second
-
-        self.BACKGROUND = pygame.image.load(os.path.join("assets", "stars.jpg")).convert() #BACKGROUND
-
-        self.MIN = 3 #min amount of time to spawn a line
-        self.MAX = 5 #max amount of time to spawn a line
         create_new_lines = schedule.every(int(self.MIN)).seconds.to(int(self.MAX)).do(self.new_line)
-        self.player = self.Player(self.SCREEN)
         self.player.x = WIDTH/2
         while True:
             self.clock.tick(self.FPS) #makes sure that the game stays at 60 fps
@@ -138,7 +127,18 @@ class linedodger():
         del self.player
 
     def main_loop(self):
+        self.SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
+        pygame.display.set_caption("Line Dodger")
+
+        self.lines = []
+        self.FPS = 60 #frames per second
+
+        self.BACKGROUND = pygame.image.load(os.path.join("assets", "stars.jpg")).convert() #BACKGROUND
+
+        self.MIN = 3 #min amount of time to spawn a line
+        self.MAX = 5 #max amount of time to spawn a line
         self.clock = pygame.time.Clock()
+        self.player = self.Player(self.SCREEN)
         pygame.init()
         pygame.font.init()
         pygame.mixer.init() #starts the player
