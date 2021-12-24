@@ -107,21 +107,25 @@ class linedodger():
                     self.objects.remove(flying_object)
                 else:
                     SCREEN.blit(flying_object["object"], (flying_object["x"], flying_object["y"]))
-                    flying_object["y"] += speed/flying_object["size"]
+                    flying_object["y"] += (speed/30)*flying_object["size"]
 
-    def updateWindow(self, player, lines, font):
+    def updateWindow(self):
         self.SCREEN.fill((0, 0, 0))
         self.bg.update(self.SCREEN, self.WIDTH, self.HEIGHT, 10) #puts the BACKGROUND
-        update_player = player.update(lines)
-        if update_player != 0:
-            return update_player
-        for line in self.lines:
-            if line.update() == -1:
-                player.score += 1
-                self.lines.remove(line)
-                del line
-        display_score = self.font.render(str(player.score), False, (255, 255, 255))
-        self.SCREEN.blit(display_score, (self.WIDTH - 64*len(str(player.score)), 20))
+        if self.started:
+            update_player = self.player.update(self.lines)
+            if update_player != 0:
+                return update_player
+            for line in self.lines:
+                if line.update() == -1:
+                    self.player.score += 1
+                    self.lines.remove(line)
+                    del line
+            display_score = self.font.render(str(self.player.score), False, (255, 255, 255))
+            self.SCREEN.blit(display_score, (self.WIDTH - 64*len(str(self.player.score)), 20))
+        else:
+            display_start = self.font.render("Press Space to Start", False, (255, 255, 255))
+            self.SCREEN.blit(display_start, ((self.WIDTH - (30*len("Press Space to Start")))/2, (self.HEIGHT/2-32)))
         pygame.display.update() #updates/refreshes the SCREEN
 
     def new_line(self):
@@ -134,12 +138,23 @@ class linedodger():
             del line
 
     def run(self):
+        while self.started == False:
+            self.clock.tick(self.FPS)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return -2
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_q:
+                        return -2
+                    elif event.key == pygame.K_SPACE:
+                        self.started = True
+            self.updateWindow()
         create_new_lines = schedule.every(int(self.MIN)).seconds.to(int(self.MAX)).do(self.new_line)
         self.player.x = self.WIDTH/2
         while True:
             self.clock.tick(self.FPS) #makes sure that the game stays at 60 fps
             schedule.run_pending()
-            if_error = self.updateWindow(self.player, self.lines, self.font) #updates the window with the new player position
+            if_error = self.updateWindow() #updates the window with the new player position
             if if_error == -1:
                 return -1
             for event in pygame.event.get(): #checks if you close the window and then stops the game
@@ -170,6 +185,7 @@ class linedodger():
         pygame.mixer.music.load(os.path.join("assets", "space_music.wav")) #loads the music file
         pygame.mixer.music.play(-1) #to play forever
         self.font = pygame.font.SysFont("Arial", 64)
+        self.started = False
         while True:
             run_game = self.run()
             if run_game == -1:
