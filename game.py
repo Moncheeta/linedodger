@@ -3,9 +3,6 @@ import os
 import random
 import schedule
 
-"""
-Todo:
-"""
 class linedodger():
     class Player():
         def __init__(self, SCREEN, SCREEN_SIZE):
@@ -16,7 +13,7 @@ class linedodger():
             self.x = self.WIDTH/2
             self.y = self.HEIGHT-20
             self.score = 0
-            self.vel = 2.8
+            self.vel = round(SCREEN_SIZE[0]/228.5, 1)
             self.player = pygame.Rect(self.x, self.y, self.size, self.size)
 
         def update(self, lines):
@@ -53,7 +50,7 @@ class linedodger():
             self.HEIGHT = SCREEN_SIZE[1]
             self.speed = 2
             self.width = 3
-            self.block_size = 32
+            self.block_size = round(SCREEN_SIZE[0]/20)
             self.num_of_chuncks = round(self.WIDTH/self.block_size)
             number_of_holes = random.randint(1, 3)
             self.holepositions = []
@@ -61,7 +58,7 @@ class linedodger():
             for item in range(number_of_holes):
                 chosen_one = random.randint(0, self.num_of_chuncks - 1)
                 while True:
-                    if not chosen_one in self.holepositions:
+                    if chosen_one not in self.holepositions and (chosen_one - 1) not in self.holepositions and (chosen_one + 1) not in self.holepositions:
                         self.holepositions.append(chosen_one)
                         break
 
