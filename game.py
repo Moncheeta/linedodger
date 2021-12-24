@@ -56,8 +56,8 @@ class linedodger():
             self.holepositions = []
             self.chuncks = []
             for item in range(number_of_holes):
-                chosen_one = random.randint(0, self.num_of_chuncks - 1)
                 while True:
+                    chosen_one = random.randint(0, self.num_of_chuncks - 1)
                     if chosen_one not in self.holepositions and (chosen_one - 1) not in self.holepositions and (chosen_one + 1) not in self.holepositions:
                         self.holepositions.append(chosen_one)
                         break
