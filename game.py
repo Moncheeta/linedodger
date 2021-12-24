@@ -43,12 +43,12 @@ class linedodger():
             return 0
 
     class Line():
-        def __init__(self, SCREEN, SCREEN_SIZE):
+        def __init__(self, SCREEN, SCREEN_SIZE, speed):
             self.y = 0
             self.SCREEN = SCREEN
             self.WIDTH = SCREEN_SIZE[0]
             self.HEIGHT = SCREEN_SIZE[1]
-            self.speed = 2
+            self.speed = speed
             self.width = 3
             self.block_size = round(SCREEN_SIZE[0]/20)
             self.num_of_chuncks = round(self.WIDTH/self.block_size)
@@ -118,6 +118,7 @@ class linedodger():
                     self.player.score += 1
                     self.lines.remove(line)
                     del line
+                    self.speed += 0.1
             display_score = self.font.render(str(self.player.score), False, (255, 255, 255))
             self.SCREEN.blit(display_score, (self.WIDTH - 64*len(str(self.player.score)), 20))
         else:
@@ -126,7 +127,7 @@ class linedodger():
         pygame.display.update() #updates/refreshes the SCREEN
 
     def new_line(self):
-        new_line = self.Line(self.SCREEN, (self.WIDTH, self.HEIGHT))
+        new_line = self.Line(self.SCREEN, (self.WIDTH, self.HEIGHT), self.speed)
         self.lines.append(new_line)
 
     def game_over(self, score): #:(
@@ -169,6 +170,7 @@ class linedodger():
         self.HEIGHT = HEIGHT
         self.SCREEN = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
         pygame.display.set_caption("Line Dodger")
+        self.speed = 2
         self.lines = []
         self.FPS = 60 #frames per second
         self.bg = self.Background(self.WIDTH, self.HEIGHT) #BACKGROUND
