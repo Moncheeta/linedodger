@@ -1,5 +1,5 @@
 import pygame
-import os
+from os import path
 import random
 import schedule
 
@@ -80,8 +80,8 @@ class linedodger():
     class Background:
         def __init__(self, WIDTH, HEIGHT):
             self.objects = []
-            self.star = pygame.image.load(os.path.join("assets", "star.png")).convert_alpha()
-            self.galaxy = pygame.image.load(os.path.join("assets", "galaxy.png")).convert_alpha()
+            self.star = pygame.image.load(path.join("assets", "star.png")).convert_alpha()
+            self.galaxy = pygame.image.load(path.join("assets", "galaxy.png")).convert_alpha()
             self.spawn_chance = 10
             self.max_objects = 100
 
@@ -134,6 +134,7 @@ class linedodger():
         for line in self.lines:
             self.lines.remove(line)
             del line
+        self.speed = 2
 
     def run(self):
         while self.started == False:
@@ -181,7 +182,7 @@ class linedodger():
         pygame.init()
         pygame.font.init()
         pygame.mixer.init() #starts the player
-        pygame.mixer.music.load(os.path.join("assets", "space_music.wav")) #loads the music file
+        pygame.mixer.music.load(path.join("assets", "space_music.wav")) #loads the music file
         pygame.mixer.music.play(-1) #to play forever
         self.font = pygame.font.SysFont("Arial", 64)
         self.started = False
