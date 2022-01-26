@@ -55,7 +55,7 @@ class linedodger():
             number_of_holes = random.randint(1, 3)
             self.holepositions = []
             self.chuncks = []
-            for item in range(number_of_holes):
+            for i in range(number_of_holes):
                 while True:
                     chosen_one = random.randint(0, self.num_of_chuncks - 1)
                     if chosen_one not in self.holepositions and (chosen_one - 1) not in self.holepositions and (chosen_one + 1) not in self.holepositions:
@@ -90,7 +90,7 @@ class linedodger():
 
         def update(self, SCREEN, WIDTH, HEIGHT, speed):
             SCREEN.fill((32, 25, 26))
-            SCREEN.blit(self.galaxy, ((WIDTH-self.galaxy.get_width())/2, (HEIGHT-self.galaxy.get_height())/2))
+            SCREEN.blt(self.galaxy, ((WIDTH-self.galaxy.get_width())/2, (HEIGHT-self.galaxy.get_height())/2))
             if len(self.objects) != self.max_objects:
                 spawn = random.randint(0, self.spawn_chance)
                 if spawn == self.spawn_chance:
@@ -148,7 +148,7 @@ class linedodger():
                     elif event.key == pygame.K_SPACE:
                         self.started = True
             self.updateWindow()
-        create_new_lines = schedule.every(int(self.MIN)).seconds.to(int(self.MAX)).do(self.new_line)
+        schedule.every(int(self.MIN)).seconds.to(int(self.MAX)).do(self.new_line)
         self.player.x = self.WIDTH/2
         while True:
             self.clock.tick(self.FPS) #makes sure that the game stays at 60 fps
