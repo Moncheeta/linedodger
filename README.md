@@ -1,4 +1,4 @@
-#linedodger
+# linedodger
 
 A basic game made with pygame where you have to avoid the walls. Controls are: { "Arrow Keys": "Controls", "q": "Quit", "Begin": "space" }
 
