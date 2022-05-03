@@ -182,7 +182,7 @@ class linedodger:
         self.speed = 2
 
     def run(self):
-        while self.started == False:
+        while self.started is False:
             self.clock.tick(self.FPS)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
