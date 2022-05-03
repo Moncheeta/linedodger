@@ -1,6 +1,7 @@
-import pygame
-from os import path
 import random
+from os import path
+
+import pygame
 import schedule
 
 
