@@ -99,7 +99,8 @@ class linedodger:
             self.spawn_chance = 10
             self.max_objects = 100
 
-        def sort_key(self, i):
+        @staticmethod
+        def sort_key(i):
             return i["size"]
 
         def update(self, SCREEN, WIDTH, HEIGHT, speed):
