@@ -42,8 +42,7 @@ class linedodger:
                         self.score = 0
                         self.x = self.WIDTH / 2
                         return -1
-                    else:
-                        line.chuncks.remove(chunck)
+                    line.chuncks.remove(chunck)
 
             return 0
 
@@ -75,18 +74,17 @@ class linedodger:
             self.y += self.speed
             if self.y >= self.HEIGHT:
                 return -1
-            else:
-                for number in range(self.num_of_chuncks):
-                    if number in self.holepositions:
-                        pass
-                    else:
-                        x = number * self.block_size
-                        new_chunck = pygame.draw.rect(
-                            self.SCREEN, (255, 0, 0), (x, self.y, self.block_size, 3)
-                        )
-                        new_chunck.topleft = x, self.y
-                        self.chuncks.append(new_chunck)
-                return 0
+            for number in range(self.num_of_chuncks):
+                if number in self.holepositions:
+                    pass
+                else:
+                    x = number * self.block_size
+                    new_chunck = pygame.draw.rect(
+                        self.SCREEN, (255, 0, 0), (x, self.y, self.block_size, 3)
+                    )
+                    new_chunck.topleft = x, self.y
+                    self.chuncks.append(new_chunck)
+            return 0
 
     class Background:
         def __init__(self):
@@ -187,10 +185,10 @@ class linedodger:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return -2
-                elif event.type == pygame.KEYDOWN:
+                if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_q:
                         return -2
-                    elif event.key == pygame.K_SPACE:
+                    if event.key == pygame.K_SPACE:
                         self.started = True
             self.updateWindow()
         schedule.every(int(self.MIN)).seconds.to(int(self.MAX)).do(self.new_line)
@@ -211,11 +209,11 @@ class linedodger:
                 if event.type == pygame.QUIT:
                     del self.player
                     return -2
-                elif event.type == pygame.KEYDOWN:
+                if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_q:
                         del self.player
                         return -2
-                    elif event.key == pygame.K_r:
+                    if event.key == pygame.K_r:
                         return -1
 
     def main_loop(self, WIDTH, HEIGHT):
