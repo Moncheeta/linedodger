@@ -180,6 +180,7 @@ class linedodger:
             self.lines.remove(line)
             del line
         self.speed = 2
+        print(f"You lost. Your score was {score}!")
 
     def run(self):
         while self.started is False:
